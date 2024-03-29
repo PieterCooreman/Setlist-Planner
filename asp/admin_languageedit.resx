@@ -1,0 +1,105 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim language : set language=new cls_language
+language.pick(aspl.getRequest("iId"))
+
+if language.iId<>0 then
+	form.writejs modalLabel(l("editlanguage"))
+else
+	form.writejs modalLabel(l("addlanguage"))	
+end if
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then	
+		
+		language.sName		=	aspl.getRequest("sName")
+		language.bDefault	=	aspl.getRequest("bDefault")
+		language.bActive	=	aspl.getRequest("bActive")
+				
+		if language.save then
+			
+			aspl.addFB(l("changeshavebeensaved"))	
+			
+			form.writejs "load('admin_languages','admin_languages','');"
+			
+		end if
+		
+	end if
+	
+end if
+
+dim iId : set iId=form.field("hidden")
+iId.add "value",language.iId
+iId.add "name","iId"
+
+dim sName : set sName=form.field("text")
+sName.add "required",true
+sName.add "class","form-control"
+sName.add "label",l("name")
+sName.add "name","sName"
+sName.add "value",language.sName
+sName.add "maxlength",50
+
+form.newline
+
+dim bActive, bDefault
+
+form.newline : form.newline
+
+if language.bDefault then
+
+	set bDefault=form.field("hidden")
+	bDefault.add "value",true
+	bDefault.add "name","bDefault"
+	
+	set bActive=form.field("hidden")
+	bActive.add "value",true
+	bActive.add "name","bActive"
+	
+	form.write "<div class=""alert alert-info"">"& l("standardlanguage") &"</div>"
+
+else
+
+	set options=aspl.dict
+	options.add "false",l("no")
+	options.add "true",l("yes")
+
+	set bActive = form.field("select")
+	bActive.add "value",language.bActive
+	bActive.add "name","bActive"
+	bActive.add "id","bActive"
+	bActive.add "options",options
+	bActive.add "label",l("active")
+	
+	form.newline : form.newline
+
+	set bDefault = form.field("select")
+	bDefault.add "value",language.bDefault
+	bDefault.add "name","bDefault"
+	bDefault.add "id","bDefault"
+	bDefault.add "options",options
+	bDefault.add "label",l("default")
+	
+	form.newline : form.newline
+
+end if
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("Save")
+submit.add "class","btn btn-primary"
+
+if language.canBeDeleted then
+	dim delete : set delete=form.field("button")
+	delete.add "html",l("Delete")
+	delete.add "class","btn btn-secondary"	
+	delete.add "onclick","load('admin_languagedelete','modalform','&iId=" & language.iId & "');"
+end if
+
+form.build
+
+%>

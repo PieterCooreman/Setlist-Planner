@@ -1,0 +1,22 @@
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <button onclick="load('admin_usertable','admin_usertable','');" class="nav-link active" id="nav-users-tab" data-bs-toggle="tab" data-bs-target="#admin_usertable" type="button" role="tab" aria-controls="admin_usertable" aria-selected="true">[users]</button>
+    <button onclick="load('admin_apps','admin_apps','');" class="nav-link" id="nav-app-tab" data-bs-toggle="tab" data-bs-target="#admin_apps" type="button" role="tab" aria-controls="admin_apps" aria-selected="false">[apps]</button> 
+    <button onclick="load('admin_languages','admin_languages','');" class="nav-link" id="nav-lang-tab" data-bs-toggle="tab" data-bs-target="#admin_languages" type="button" role="tab" aria-controls="admin_languages" aria-selected="false">[languages]</button> 
+    <button onclick="load('admin_translations','admin_translations','');" class="nav-link" id="nav-translations-tab" data-bs-toggle="tab" data-bs-target="#admin_translations" type="button" role="tab" aria-controls="admin_translations" aria-selected="false">[translations]</button> 
+    <button onclick="load('admin_system','admin_system','');" class="nav-link" id="nav-system-tab" data-bs-toggle="tab" data-bs-target="#admin_system" type="button" role="tab" aria-controls="admin_system" aria-selected="false">[systemsettings]</button> 
+    <button onclick="load('admin_systemmail','admin_systemmail','');" class="nav-link" id="nav-systemmail-tab" data-bs-toggle="tab" data-bs-target="#admin_systemmail" type="button" role="tab" aria-controls="admin_systemmail" aria-selected="false">[mail]</button> 
+    <button onclick="load('admin_tools','admin_tools','');" class="nav-link" id="nav-tools-tab" data-bs-toggle="tab" data-bs-target="#admin_tools" type="button" role="tab" aria-controls="admin_tools" aria-selected="false">[tools]</button> 
+    <button onclick="load('admin_vars','admin_vars','');" class="nav-link" id="nav-vars-tab" data-bs-toggle="tab" data-bs-target="#admin_vars" type="button" role="tab" aria-controls="admin_vars" aria-selected="false">[variables]</button> 
+  </div>
+</nav>
+<div class="tab-content" id="nav-tabContent" style="padding-top:7px">
+  <div class="tab-pane fade show active" id="admin_usertable" role="tabpanel" aria-labelledby="nav-users-tab"></div>
+  <div class="tab-pane fade" id="admin_languages" role="tabpanel" aria-labelledby="nav-lang-tab"></div>
+  <div class="tab-pane fade" id="admin_apps" role="tabpanel" aria-labelledby="nav-app-tab"></div>
+  <div class="tab-pane fade" id="admin_translations" role="tabpanel" aria-labelledby="nav-translations-tab"></div>
+  <div class="tab-pane fade" id="admin_system" role="tabpanel" aria-labelledby="nav-system-tab"></div>
+  <div class="tab-pane fade" id="admin_systemmail" role="tabpanel" aria-labelledby="nav-systemmail-tab"></div>
+  <div class="tab-pane fade" id="admin_tools" role="tabpanel" aria-labelledby="nav-tools-tab"></div>
+  <div class="tab-pane fade" id="admin_vars" role="tabpanel" aria-labelledby="nav-vars-tab"></div>
+</div>

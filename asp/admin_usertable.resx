@@ -1,0 +1,19 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim txt : txt=aspl.loadText("html/admin_usertable.txt")
+
+txt=replace(txt,"[role]",l("role"),1,-1,1)
+txt=replace(txt,"[firstname]",l("firstname"),1,-1,1)
+txt=replace(txt,"[lastname]",l("lastname"),1,-1,1)
+txt=replace(txt,"[updated]",l("updated"),1,-1,1)
+txt=replace(txt,"[lastlogin]",l("lastlogin"),1,-1,1)
+txt=replace(txt,"[email]",l("email"),1,-1,1)
+txt=replace(txt,"[add]",l("addnew"),1,-1,1)
+
+form.write txt
+
+form.build
+%>

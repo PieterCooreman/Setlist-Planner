@@ -1,0 +1,48 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim language : set language=new cls_language
+language.pick(aspl.getRequest("iId"))
+if not language.canBeDeleted then aspl.die
+
+form.writejs modalLabel(l("deletelanguage"))
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then
+	
+		if language.remove then
+			
+			aspl.addFB(l("languagehasbeendeleted"))	
+			
+			form.writejs "load('admin_languages','admin_languages','');"
+			
+			form.build
+			
+		end if
+		
+	end if
+	
+end if
+
+dim iId : set iId=form.field("hidden")
+iId.add "value",language.iId
+iId.add "name","iId"
+
+aspl.addWarning(l("deletecmd") & " <b>" & server.htmlencode(language.sName) & "</b>?")
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("Delete")
+submit.add "class","btn btn-warning"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class","btn btn-secondary"
+cancel.add "onclick","load('admin_languageedit','modalform','&iId=" & language.iId & "');"
+
+form.build
+
+%>

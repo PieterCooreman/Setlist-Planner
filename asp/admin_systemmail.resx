@@ -1,0 +1,77 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+if form.postback then
+
+	if aspl.isEmpty(form.request("sEmail")) then
+
+		dim sEmail : set sEmail=form.field("email")
+		sEmail.add "name","sEmail"
+		sEmail.add "maxlength",100
+		sEmail.add "style","max-width:350px"
+		sEmail.add "required",true
+		sEmail.add "label",l("email")
+		
+		dim submit : set submit=form.field("submit")
+		submit.add "html",l("submit")
+		submit.add "class","btn btn-primary mt-2"
+		
+		dim cancel : set cancel=form.field("button")
+		cancel.add "html",l("cancel")
+		cancel.add "class","btn btn-secondary mt-2"
+		cancel.add "onclick","load('admin_systemmail','admin_systemmail','');"
+	
+	else
+	
+		'mail verzenden		
+		dim cdomessage : set cdomessage=aspL.plugin("cdomessage")
+		cdomessage.receiveremail=form.request("sEmail")		
+		cdomessage.subject="Test mail"	
+		cdomessage.body="Test mail"
+		cdomessage.send
+		set cdomessage=nothing
+		
+		aspl.addFB(l("testmailsent"))
+		
+		form.writejs "setTimeout(function(){load('admin_systemmail','','');},3000);"
+	
+	end if	
+
+else
+
+	dim modify : set modify=form.field("button")
+	modify.add "html",l("modify")
+	modify.add "class","btn btn-primary"
+	modify.add "onclick","load('admin_systemmailedit','admin_systemmail','');"
+
+	dim testmail : set testmail=form.field("submit")
+	testmail.add "html",l("sendtestmail")
+	testmail.add "class","btn btn-warning"
+
+end if
+
+
+dim sv
+sv="<table id=""systemmail"" class=""table table-striped""><thead>"
+sv=sv & "<tr>"
+sv=sv & "<th>"&l("variable")&"</th>"
+sv=sv & "<th>"&l("value")&"</th>"
+sv=sv & "</tr></thead><tbody>"
+sv=sv & "<tr><td>SMTP Server</td><td>"&system.smtpserver&"</td></tr>"
+sv=sv & "<tr><td>SMTP Port</td><td>"&system.smtpport&"</td></tr>"
+sv=sv & "<tr><td>Send using</td><td>"&system.sendusing&"</td></tr>"
+sv=sv & "<tr><td>Pickup directory</td><td>"&system.pickupdir&"</td></tr>"
+sv=sv & "<tr><td>Use SSL?</td><td>"&system.smtpusessl&"</td></tr>"
+sv=sv & "<tr><td>SMTP Username</td><td>"&system.smtpusername&"</td></tr>"
+sv=sv & "<tr><td>SMTP Password</td><td>*********</td></tr>"
+sv=sv & "<tr><td>From email</td><td>"&system.fromemail&"</td></tr>"
+sv=sv & "<tr><td>From name</td><td>"&system.fromname&"</td></tr>"
+sv=sv & "</tbody></table>"
+
+form.write sv
+
+form.build()
+
+%>

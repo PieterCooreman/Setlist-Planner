@@ -1,0 +1,31 @@
+<%
+
+dim form : set form=aspl.form
+
+form.writejs modalLabel(l("doyouwanttosignout"))
+
+'##########################################################################################
+
+dim signout : set signout=form.field("submit")
+signout.add "html",l("signout") 
+signout.add "class","btn btn-primary"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("staysignedin")
+cancel.add "class","btn btn-secondary"
+cancel.add "databsdismiss","modal"
+
+'##########################################################################################
+
+if form.postback then
+
+	if sec.signout then	
+				
+		form.writejs "location.assign('" & getSiteUrl & "');"
+			
+	end if
+
+end if
+
+form.build()
+%>

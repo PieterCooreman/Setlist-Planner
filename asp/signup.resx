@@ -1,0 +1,155 @@
+<%
+
+dim form : set form=aspl.form
+
+if aspl.convertNmbr(session("userToBeConfirmed"))<>0 then
+
+	dim userConf : set userConf=new cls_user
+	userConf.pick(session("userToBeConfirmed"))
+
+	if form.postback then
+
+		'session securitycheck
+		if form.sameSession then
+		
+			if len(aspl.getRequest("sPw"))<8 then 
+			
+				aspl.addErr(l("pleaseprovideacorrectpassword"))
+		
+			elseif aspl.getRequest("sPw") <> aspl.getRequest("sPw2") then 
+			
+				aspl.addErr(l("passwordsarenotequaltryagain")) 
+				
+			else
+				userConf.sPw=sha256(aspl.getRequest("sPw"))				
+				userConf.confirm()
+				
+				'aspl.addFB(l("youreallsetpleasesignin"))
+				
+				'autologin
+				sec.signin userConf.sEmail,userConf.sPw
+				
+				form.writejs "location.assign('" & getSiteUrl & "');"
+				
+				form.build				
+				
+			end if
+		
+		end if
+	
+	end if
+
+	aspl.addFB(l("yourealmosttherepleasechooseapasswordpas"))
+
+	dim sPw : set sPw=form.field("password")
+	sPw.add "required",true
+	sPw.add "class","form-control"
+	sPw.add "label",l("pw")
+	sPw.add "name","sPw"
+	sPw.add "maxlength",100
+	'sPw.add "pattern","^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+	
+	form.newline
+	
+	dim sPw2 : set sPw2=form.field("password")
+	sPw2.add "required",true
+	sPw2.add "class","form-control"
+	sPw2.add "label",l("retypeyourpassword")
+	sPw2.add "name","sPw2"
+	sPw2.add "maxlength",100
+	'sPw2.add "pattern","^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+	
+	form.newline
+
+	dim submitPw : set submitPw=form.field("submit")
+	submitPw.add "html",l("submit")
+	submitPw.add "class","btn btn-primary"	
+
+	form.build
+
+end if
+
+if not system.bAllowNewRegistrations then form.build
+
+dim userObj : set userObj=new cls_user
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then	
+	
+		if not aspl.isEmpty(aspl.getRequest("agree")) then asp.die
+		
+		userObj.sFirstname		=	aspl.getRequest("sFirstname")
+		userObj.sLastname		=	aspl.getRequest("sLastname")
+		userObj.sEmail			=	aspl.getRequest("sEmail")
+		userObj.iLanguageID		=	aspl.getRequest("iLanguageID")
+		
+		session("iLanguageID")	=	userObj.iLanguageID
+		
+		if userObj.save then
+			
+			dim message
+			message=l("anemailissentto") & " " & userObj.sEmail & ". " & l("pleaseconfirmyouremailbyclickingtheconfirma")
+			
+			aspl.addFB(message)
+			
+			form.build
+			
+		end if
+		
+	end if
+	
+end if
+
+dim firstname : set firstname=form.field("text")
+firstname.add "required",true
+firstname.add "class","form-control"
+firstname.add "label",l("firstname")
+firstname.add "name","sFirstname"
+firstname.add "maxlength",100
+
+form.newline
+
+dim lastname : set lastname=form.field("text")
+lastname.add "required",true
+lastname.add "class","form-control"
+lastname.add "label",l("lastname")
+lastname.add "name","sLastname"
+lastname.add "maxlength",100
+
+form.newline
+
+dim email : set email=form.field("email")
+email.add "required",true
+email.add "class","form-control"
+email.add "label",l("email")
+email.add "name","sEmail"
+email.add "maxlength",100
+
+dim agree : set agree=form.field("text")
+agree.add "class","d-none"
+agree.add "name","agree"
+agree.add "style","display:none"
+agree.add "maxlength",100
+
+form.newline
+
+dim languagelist : set languagelist=new cls_languagelist
+
+set iLanguageID = form.field("select")
+iLanguageID.add "name","iLanguageID"
+iLanguageID.add "id","iLanguageID"
+iLanguageID.add "options",languagelist.dict
+iLanguageID.add "label",l("language")
+iLanguageID.add "value",userObj.iLanguageID
+
+form.newline
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("register")
+submit.add "class","btn btn-primary"
+
+form.build
+
+%>

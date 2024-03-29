@@ -1,0 +1,40 @@
+<%
+dim form : set form=aspl.form
+
+if form.postback then
+	
+	if sec.signin(aspl.getRequest("sEmail"),sha256(aspl.getRequest("sPw"))) then
+	
+		form.writejs "location.assign('"& getSiteUrl &"');"	
+	
+	else
+	
+		aspl.addErr(l("incorrectemailpassword"))
+	
+	end if
+	
+end if
+
+dim sEmail : set sEmail=form.field("email")
+sEmail.add "required",true
+sEmail.add "class","form-control"
+sEmail.add "label",l("Email")
+sEmail.add "name","sEmail"
+sEmail.add "autocomplete","on"
+
+form.newline
+
+dim sPw : set sPw=form.field("password")
+sPw.add "required",true
+sPw.add "class","form-control"
+sPw.add "label",l("pw")
+sPw.add "name","sPw"
+
+form.newline
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("signin")
+submit.add "class","btn btn-primary"
+	
+form.build
+%>

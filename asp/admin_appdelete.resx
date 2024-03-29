@@ -1,0 +1,48 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim app : set app=new cls_app
+app.pick(aspl.getRequest("iId"))
+if not app.canBeDeleted then aspl.die
+
+form.writejs modalLabel(l("deleteapp"))
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then
+	
+		if app.remove then
+			
+			aspl.addFB(l("apphasbeendeleted"))	
+			
+			form.writejs "load('admin_apps','admin_apps','');"
+			
+			form.build
+			
+		end if
+		
+	end if
+	
+end if
+
+dim iId : set iId=form.field("hidden")
+iId.add "value",app.iId
+iId.add "name","iId"
+
+aspl.addWarning(l("deletecmd") & " <b>" & server.htmlencode(app.sName) & "</b>?")
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("Delete")
+submit.add "class","btn btn-warning"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class","btn btn-secondary"
+cancel.add "onclick","load('admin_appedit','modalform','&iId=" & app.iId & "');"
+
+form.build
+
+%>

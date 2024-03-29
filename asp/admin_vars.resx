@@ -1,0 +1,24 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim s,sf : sf="<table id=""vars"" class=""table table-striped"">"
+sf=sf & "<thead>"
+sf=sf & "<th>"&l("variable")&"</th>"
+sf=sf & "<th>"&l("value")&"</th>"
+sf=sf & "</thead><tbody>" 
+
+for each s in request.servervariables
+	sf=sf & "<tr><td>" & s & "</td><td> " & request.servervariables(s) & "</td></tr>"
+next
+
+sf=sf & "</tbody></table>"
+
+form.write sf
+
+form.writejs "drawSimpleDT('vars');"
+
+form.build()
+
+%>

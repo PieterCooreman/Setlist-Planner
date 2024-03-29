@@ -1,0 +1,5 @@
+<%
+dim form : set form=aspl.form
+form.reload=360 'reload this form every 360 seconds
+form.build()
+%>

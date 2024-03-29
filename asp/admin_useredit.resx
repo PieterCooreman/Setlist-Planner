@@ -1,0 +1,128 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim userObj : set userObj=new cls_user
+userObj.pick(aspl.getRequest("iId"))
+
+if userObj.iId<>0 then
+	form.writejs modalLabel(l("edituser"))
+else
+	form.writejs modalLabel(l("adduser"))	
+end if
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then	
+		
+		userObj.sFirstname		=	aspl.getRequest("sFirstname")
+		userObj.sLastname		=	aspl.getRequest("sLastname")
+		userObj.sEmail			=	aspl.getRequest("sEmail")
+		userObj.bAdmin			=	aspl.getRequest("bAdmin")
+		userObj.iLanguageID		=	aspl.getRequest("iLanguageID")		
+		
+		if userObj.save then
+			
+			aspl.addFB(l("changeshavebeensaved"))	
+			form.writejs "$('#usertable').DataTable().ajax.reload();"
+			
+		end if
+		
+	end if
+	
+end if
+
+dim iId : set iId=form.field("hidden")
+iId.add "value",userObj.iId
+iId.add "name","iId"
+
+if userObj.iId=0 then
+aspl.addWarning(l("warningafteryouclicksaveanemailwillbese"))
+end if
+
+dim firstname : set firstname=form.field("text")
+firstname.add "required",true
+firstname.add "class","form-control"
+firstname.add "label",l("firstname")
+firstname.add "name","sFirstname"
+firstname.add "value",userObj.sFirstname
+firstname.add "maxlength",100
+
+form.newline
+
+dim lastname : set lastname=form.field("text")
+lastname.add "required",true
+lastname.add "class","form-control"
+lastname.add "label",l("lastname")
+lastname.add "name","sLastname"
+lastname.add "value",userObj.sLastname
+lastname.add "maxlength",100
+
+form.newline
+
+dim email : set email=form.field("email")
+email.add "required",true
+email.add "class","form-control"
+email.add "label",l("email")
+email.add "name","sEmail"
+email.add "value",userObj.sEmail
+email.add "maxlength",100
+
+form.newline
+
+dim languagelist : set languagelist=new cls_languagelist
+
+set iLanguageID = form.field("select")
+iLanguageID.add "value",userObj.iLanguageID
+iLanguageID.add "name","iLanguageID"
+iLanguageID.add "id","iLanguageID"
+iLanguageID.add "options",languagelist.dict
+iLanguageID.add "label",l("language")
+
+form.newline
+
+dim bAdmin
+
+'security! admins kunnen zichzelf niet verwijderen
+if userObj.iId=user.iId and userObj.bAdmin then 
+
+	set bAdmin = form.field("hidden")
+	bAdmin.add "value","true"
+	bAdmin.add "name","bAdmin"
+	
+else
+
+	set options=aspl.dict
+	options.add "false",l("no")
+	options.add "true",l("yes")
+
+	set bAdmin = form.field("select")
+	bAdmin.add "value",userObj.bAdmin
+	bAdmin.add "name","bAdmin"
+	bAdmin.add "id","bAdmin"
+	bAdmin.add "required",true
+	bAdmin.add "options",options
+	bAdmin.add "label",l("administrator")
+	bAdmin.add "container","div"
+	bAdmin.add "containerclass","col-md-12"
+
+end if
+
+form.newline : form.newline
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("Save")
+submit.add "class","btn btn-primary"
+
+if userObj.canBeDeleted then
+	dim delete : set delete=form.field("button")
+	delete.add "html",l("Delete")
+	delete.add "class","btn btn-secondary"	
+	delete.add "onclick","load('admin_userdelete','modalform','&iId=" & userObj.iId & "');"
+end if
+
+form.build
+
+%>

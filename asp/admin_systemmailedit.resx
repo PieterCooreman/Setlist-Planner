@@ -1,0 +1,124 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then	
+
+		system.smtpserver 			= aspl.getRequest("smtpserver")
+		system.smtpport 			= aspl.convertNmbr(aspl.getRequest("smtpport"))
+		system.sendusing 			= aspl.convertNmbr(aspl.getRequest("sendusing"))
+		system.pickupdir 			= aspl.getRequest("pickupdir")
+		system.smtpusessl 			= aspl.getRequest("smtpusessl")
+		system.smtpusername 		= aspl.getRequest("smtpusername")
+		system.smtpuserpw 			= aspl.getRequest("smtpuserpw")
+		system.fromemail 			= aspl.getRequest("fromemail")
+		system.fromname 			= aspl.getRequest("fromname")	
+				
+		if system.save then	
+		
+			aspl.addFB(l("changeshavebeensaved"))		
+			
+		end if
+		
+	end if
+	
+end if
+
+
+dim smtpserver : set smtpserver=form.field("text")
+smtpserver.add "name","smtpserver"
+smtpserver.add "label","SMTP Server"
+smtpserver.add "required",true
+smtpserver.add "value",system.smtpserver
+smtpserver.add "maxlength",100
+
+form.newline
+
+dim smtpport : set smtpport=form.field("number")
+smtpport.add "name","smtpport"
+smtpport.add "label","SMTP Port (common used ports are 25, 465, 587, and 2525)"
+smtpport.add "value",system.smtpport
+smtpport.add "required",true
+
+form.newline
+
+dim sendusing : set sendusing=form.field("number")
+sendusing.add "name","sendusing"
+sendusing.add "value",system.sendusing
+sendusing.add "required",true
+sendusing.add "label","Send using (localhost: 1, external mailserver via port: 2)"
+
+form.newline
+
+dim pickupdir : set pickupdir=form.field("text")
+pickupdir.add "name","pickupdir"
+pickupdir.add "value",system.pickupdir
+pickupdir.add "maxlength",100
+pickupdir.add "required",true
+pickupdir.add "label","Pickup directory"
+
+form.newline
+
+set options=aspl.dict
+options.add "false",l("no")
+options.add "true",l("yes")
+
+dim smtpusessl : set smtpusessl = form.field("select")
+smtpusessl.add "value",system.smtpusessl
+smtpusessl.add "name","smtpusessl"
+smtpusessl.add "id","smtpusessl"
+smtpusessl.add "options",options
+smtpusessl.add "label","Use SSL?"
+
+form.newline
+
+dim smtpusername : set smtpusername=form.field("text")
+smtpusername.add "name","smtpusername"
+smtpusername.add "value",system.smtpusername
+smtpusername.add "maxlength",100
+smtpusername.add "label","SMTP username (only if SSL is used)"
+
+form.newline
+
+dim smtpuserpw : set smtpuserpw=form.field("password")
+smtpuserpw.add "name","smtpuserpw"
+smtpuserpw.add "value",system.smtpuserpw
+smtpuserpw.add "maxlength",100
+smtpuserpw.add "label","SMTP password (only if SSL is used)"
+
+form.newline
+
+dim fromemail : set fromemail=form.field("email")
+fromemail.add "name","fromemail"
+fromemail.add "value",system.fromemail
+fromemail.add "maxlength",100
+fromemail.add "required",true
+fromemail.add "label","Email ""From"" for outgoing messages"
+
+form.newline
+
+dim fromname : set fromname=form.field("text")
+fromname.add "name","fromname"
+fromname.add "value",system.fromname
+fromname.add "maxlength",100
+fromname.add "required",true
+fromname.add "label","Name ""From"" for outgoing messages"
+
+form.newline
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("Save")
+submit.add "class","btn btn-primary"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class","btn btn-secondary"
+cancel.add "onclick","load('admin_systemmail','admin_systemmail','');"
+
+form.build()
+
+%>

@@ -1,0 +1,48 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim label : set label=new cls_label
+label.pick(aspl.getRequest("iId"))
+if not label.canBeDeleted then aspl.die
+
+form.writejs modalLabel(l("deletelabel"))
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then
+	
+		if label.remove then
+			
+			aspl.addFB(l("labelhasbeendeleted"))	
+			
+			form.writejs "load('admin_translations','admin_translations','');"
+			
+			form.build
+			
+		end if
+		
+	end if
+	
+end if
+
+dim iId : set iId=form.field("hidden")
+iId.add "value",label.iId
+iId.add "name","iId"
+
+aspl.addWarning(l("deletecmd") & " <b>" & server.htmlencode(label.sCode) & "</b>?")
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("Delete")
+submit.add "class","btn btn-warning"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class","btn btn-secondary"
+cancel.add "onclick","load('admin_labeledit','modalform','&iId=" & label.iId & "');"
+
+form.build
+
+%>

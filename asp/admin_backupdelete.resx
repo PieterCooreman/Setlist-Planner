@@ -1,0 +1,47 @@
+<%
+
+user.checkifadmin
+
+dim form : set form=aspl.form
+dim filepath : filepath=aspl.getRequest("filepath")
+
+'security - does the file exist and has the filename not been tampered with?
+if instr(filepath,"/")<>0 or  instr(filepath,"\")<>0 then asp.die
+
+dim filepathmdb : filepathmdb=replace(filepath,".resx","",1,-1,1)
+
+if form.postback then
+	
+	aspl.fso.deleteFile(server.mappath("db/backup/" & filepath & ""))
+	
+	aspl.addFB(l("backuphasbeenremoved"))
+	
+	dim back : set back=form.field("button")
+	back.add "html",l("back")
+	back.add "class", "btn btn-primary"
+	back.add "onclick","load('admin_backups','modalform','');"
+		
+	form.build
+	
+end if
+
+form.writejs modalLabelXL(l("deletecmd") & " " & filepathmdb & "?")
+
+aspl.addWarning (l("deletebackup"))
+
+dim filepathhf : set filepathhf=form.field("hidden")
+filepathhf.add "name","filepath"
+filepathhf.add "value",filepath
+
+dim delete : set delete=form.field("submit")
+delete.add "html",l("deletecmd") & " <strong>" & filepathmdb & "</strong>"
+delete.add "class", "btn btn-danger"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class", "btn btn-secondary"
+cancel.add "onclick","load('admin_backupdetail','modalform','&filepath="&server.urlencode(filepath)&"');"
+
+form.build
+
+%>

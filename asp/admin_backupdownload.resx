@@ -1,0 +1,10 @@
+<%
+
+user.checkifadmin
+
+dim filepath : filepath=aspl.getRequest("filepath")
+dim filepathmdb : filepathmdb=replace(filepath,".resx","",1,-1,1)
+
+aspl.dumpBinary "db/backup/" & filepath,filepathmdb
+
+%>

@@ -1,0 +1,84 @@
+<%
+dim form : set form=aspl.form
+
+dim userObj : set userObj=new cls_user
+userObj.pick(user.iId) : userObj.mustexist
+
+form.writejs modalLabel(l("resetpw"))
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then
+	
+		if len(aspl.getRequest("sPw"))<8 then 
+			
+			aspl.addErr(l("pleaseprovideacorrectpassword"))
+	
+		elseif aspl.getRequest("sPw") <> aspl.getRequest("sPw2") then 
+		
+			aspl.addErr(l("passwordsarenotequaltryagain")) 
+			
+		else
+		
+			userObj.sPw=sha256(aspl.getRequest("sPw"))
+			userObj.save			
+			
+			aspl.addFB(l("changeshavebeensaved"))
+						
+			dim close : set close=form.field("button")
+			close.add "html",l("close")
+			close.add "class","btn btn-secondary"
+			close.add "databsdismiss","modal"
+			
+			'error message verwijderen
+			form.writeJS "$('#changedefaultpw').remove();"
+			
+			form.build				
+			
+		end if
+		
+	end if
+	
+else
+
+	aspl.addInfo l("yourealmosttherepleasechooseapasswordpas")
+
+end if
+
+dim iId : set iId=form.field("hidden")
+iId.add "value",userObj.iId
+iId.add "name","iId"
+
+dim sPw : set sPw=form.field("password")
+sPw.add "required",true
+sPw.add "class","form-control"
+sPw.add "label",l("newpw")
+sPw.add "name","sPw"
+sPw.add "maxlength",100
+'sPw.add "pattern","^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+
+form.newline
+
+dim sPw2 : set sPw2=form.field("password")
+sPw2.add "required",true
+sPw2.add "class","form-control"
+sPw2.add "label",l("retypeyourpassword")
+sPw2.add "name","sPw2"
+sPw2.add "maxlength",100
+'sPw2.add "pattern","^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+
+form.newline
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("save")
+submit.add "class","btn btn-primary"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class","btn btn-secondary"
+cancel.add "onclick","load('myaccount','modalform','');"
+
+form.build
+
+%>

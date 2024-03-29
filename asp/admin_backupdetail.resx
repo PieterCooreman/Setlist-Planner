@@ -1,0 +1,29 @@
+<%
+
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+form.writejs modalLabel(l("backupdetail"))
+
+dim filepath : filepath=aspl.getRequest("filepath")
+dim filepathmdb : filepathmdb=replace(filepath,".resx","",1,-1,1)
+
+dim download : set download=form.field("button")
+download.add "html",l("Download") & " <strong>" & filepathmdb & "</strong>"
+download.add "class", "btn btn-primary"
+download.add "onclick","location.assign('?asplEvent=admin_backupdownload&filepath=" & server.urlencode(filepath) & "');"
+
+dim delete : set delete=form.field("button")
+delete.add "html",l("deletecmd") & " <strong>" & filepathmdb & "</strong>"
+delete.add "class", "btn btn-danger"
+delete.add "onclick","load('admin_backupdelete','modalform','&filepath=" & server.urlencode(filepath) & "');"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class", "btn btn-secondary"
+cancel.add "onclick","load('admin_backups','modalform','');"
+
+form.build
+
+%>

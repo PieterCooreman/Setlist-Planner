@@ -1,0 +1,119 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then	
+
+		system.sName 					= aspl.getRequest("sName")
+		system.sLogo 					= aspl.getRequest("sLogo")
+		system.sTerms 					= aspl.getRequest("sTerms")
+		system.sSocialSharing 			= aspl.getRequest("sSocialSharing")
+		system.sSystemEmail 			= aspl.getRequest("sSystemEmail")
+		system.bAllowNewRegistrations	= aspl.convertBool(aspl.getRequest("bAllowNewRegistrations"))
+		system.bAllowUsersDelete		= aspl.convertBool(aspl.getRequest("bAllowUsersDelete"))				
+		system.sChromeASP 				= aspl.getRequest("sChromeASP")
+		system.sChromeASPpw 			= aspl.getRequest("sChromeASPpw")
+						
+		if system.save then	
+		
+			aspl.addFB(l("changeshavebeensaved"))			
+			
+		end if
+		
+	end if
+	
+end if
+
+dim sName : set sName=form.field("text")
+sName.add "name","sName"
+sName.add "label",l("name")
+sName.add "required",true
+sName.add "value",system.sName
+sName.add "maxlength",50
+
+form.newline
+
+dim sLogo : set sLogo=form.field("text")
+sLogo.add "name","sLogo"
+sLogo.add "label","Default logo"
+sLogo.add "value",system.sLogo
+sLogo.add "maxlength",255
+
+form.newline
+
+set options=aspl.dict
+options.add "false",l("no")
+options.add "true",l("yes")
+
+set bAllowNewRegistrations = form.field("select")
+bAllowNewRegistrations.add "value",system.bAllowNewRegistrations
+bAllowNewRegistrations.add "name","bAllowNewRegistrations"
+bAllowNewRegistrations.add "id","bAllowNewRegistrations"
+bAllowNewRegistrations.add "options",options
+bAllowNewRegistrations.add "label",l("allowNewRegistrations")
+
+form.newline
+
+set bAllowUsersDelete = form.field("select")
+bAllowUsersDelete.add "value",system.bAllowUsersDelete
+bAllowUsersDelete.add "name","bAllowUsersDelete"
+bAllowUsersDelete.add "id","bAllowUsersDelete"
+bAllowUsersDelete.add "options",options
+bAllowUsersDelete.add "label",l("allowusersdelete")
+
+form.newline
+
+dim sSystemEmail : set sSystemEmail=form.field("email")
+sSystemEmail.add "name","sSystemEmail"
+sSystemEmail.add "label","Send copy of all outgoing emails to"
+sSystemEmail.add "value",system.sSystemEmail
+sSystemEmail.add "maxlength",50
+
+form.newline
+
+dim sTerms : set sTerms=form.field("textarea")
+sTerms.add "name","sTerms"
+sTerms.add "label","Default terms and services"
+sTerms.add "value",system.sTerms
+
+form.newline
+
+dim sSocialSharing : set sSocialSharing=form.field("textarea")
+sSocialSharing.add "name","sSocialSharing"
+sSocialSharing.add "label","Default social sharing metatags"
+sSocialSharing.add "value",system.sSocialSharing
+
+form.newline
+
+dim sChromeASP : set sChromeASP=form.field("text")
+sChromeASP.add "name","sChromeASP"
+sChromeASP.add "label","ChromeASP Engine"
+sChromeASP.add "value",system.sChromeASP
+sChromeASP.add "maxlength",50
+
+form.newline
+
+dim sChromeASPpw : set sChromeASPpw=form.field("password")
+sChromeASPpw.add "name","sChromeASPpw"
+sChromeASPpw.add "label","ChromeASP Engine Password"
+sChromeASPpw.add "value",system.sChromeASPpw
+sChromeASPpw.add "maxlength",50
+
+form.newline
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("Save")
+submit.add "class","btn btn-primary"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class","btn btn-secondary"
+cancel.add "onclick","load('admin_system','admin_system','');"
+
+form.build()
+
+%>

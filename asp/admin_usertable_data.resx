@@ -1,0 +1,47 @@
+<%
+user.checkifadmin
+
+dim returnJson : set returnJson=new cls_datatables_returnJson : set returnJson.dbClass=db
+dim strSelect,strWhere
+strSelect="select sLastname, sFirstname, sEmail, dLoginTS, dUpdatedTS, bAdmin, iId from tblUser "
+
+'pass the selectClause to the returnJson object
+returnJson.strSelect=strSelect
+
+strWhere=" where bDeleted=false " 
+
+'if a searchstring is entered, you have to decide on what to search for exactly
+'make sure to ALWAYS use aspl.sqli!!! (or anything else to prevent SQLinjection)
+if not aspL.isEmpty(returnJson.strSearch) then
+
+	dim strSearch : strSearch=returnJson.strSearch
+	strSearch=replace(strSearch,vbtab,"",1,-1,1)
+	strSearch=trim(aspl.sqli(strSearch))	
+
+	'search in the contact-table
+	strWhere = strWhere & " and (sLastname like '%" & strSearch & "%' or sFirstname like '%" & strSearch & "%' or sEmail like '%" & strSearch & "%') "
+	
+	'return the whereClause to returnJson	
+	
+end if	
+
+returnJson.strWhere=strWhere
+
+'let the class know how to sort! dit moet overeenkomen met de volgorde van de tabellen in de HTML-view!
+select case returnJson.orderCol
+		
+	case 0 : returnJson.OrderCol="sLastname"
+	case 1 : returnJson.OrderCol="sFirstname"
+	case 2 : returnJson.OrderCol="sEmail"
+	case 3 : returnJson.OrderCol="dLoginTS"
+	case 4 : returnJson.OrderCol="dUpdatedTS"
+	case 5 : returnJson.OrderCol="bAdmin"
+
+end select 
+
+aspL.aspError("datatables server-side-processing")
+
+'finally return the JSon object to DataTables - here stops the page execution
+returnJson.dumpJson()
+
+%>

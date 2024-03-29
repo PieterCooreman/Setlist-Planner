@@ -1,0 +1,38 @@
+<%
+dim form : set form=aspl.form
+
+if form.postback then
+	
+	sec.resetPw(aspl.getRequest("sEmail"))
+	aspl.addFB (l("ifyouremailwasfoundinstructionshowtoreset"))
+		
+	dim signin : set signin=form.field("button")
+	signin.add "html",l("signin")
+	signin.add "class","btn btn-primary"	
+	signin.add "onclick","load('signin','signin','');return false;"	
+	
+	form.build
+	
+end if
+
+dim email : set email=form.field("email")
+email.add "required",true
+email.add "class","form-control"
+email.add "label",l("pleaseprovidetheemailaddressyouregisteredwi")
+email.add "name","sEmail"
+email.add "maxlength",100
+
+form.newline
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("submit")
+submit.add "class","btn btn-primary"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class","btn btn-secondary"
+cancel.add "onclick","load('signin','signin','');return false;"
+
+form.build
+
+%>

@@ -1,0 +1,43 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim addnew : set addnew=form.field("button")
+addnew.add "html",l("addnew")
+addnew.add "onclick","modalAspForm('admin_appedit','','');return false;"
+addnew.add "class","btn btn-primary"
+
+dim table : table="<table id=""apps"" class=""table table-striped"">"
+table=table & "<thead>"
+table=table & "<tr>"
+table=table & "<th>"&l("name")&"</th>"
+table=table & "<th>"&l("path")&"</th>"
+table=table & "<th>"&l("active")&"</th>"
+table=table & "<th>"&l("availableforallusers")&"</th>"
+table=table & "</tr>"
+table=table & "</thead>"
+table=table & "<tbody>"
+
+
+dim rs : set rs=db.execute("select * from tblApp where bDeleted=false order by sName")
+
+while not rs.eof 
+	table=table & "<tr>"
+		table=table & "<td><a class=""link"" href=""#"" onclick=""modalAspForm('admin_appedit'," & rs("iId") & ",'');"">" & aspl.htmlencode(rs("sName")) & "</a></td>"
+		table=table & "<td>" & aspl.htmlEncode(rs("sPath")) & "</td>"
+		table=table & "<td>" & yesNo(rs("bActive")) & "</td>"
+		table=table & "<td>" & yesNo(rs("bPublic")) & "</td>"
+	table=table & "</tr>"
+	rs.movenext
+wend
+
+table=table & "</tbody></table>"
+
+form.write table
+
+form.writejs "drawSimpleDT('apps');"
+
+form.build
+
+%>

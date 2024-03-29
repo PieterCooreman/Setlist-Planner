@@ -1,0 +1,138 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim app : set app=new cls_app
+app.pick(aspl.getRequest("iId"))
+
+if app.iId<>0 then
+	form.writejs modalLabel(l("editapp"))
+else
+	form.writejs modalLabel(l("addapp"))	
+end if
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then	
+		
+		app.sName			=	aspl.getRequest("sName")
+		app.bPublic			=	aspl.getRequest("bPublic")
+		app.bActive			=	aspl.getRequest("bActive")
+		app.sPath			=	aspl.getRequest("sPath")
+		app.sDefault		=	aspl.getRequest("sDefault")
+		app.sPublicPath		=	aspl.getRequest("sPublicPath")
+		app.sDescription	=	aspl.getRequest("sDescription")
+		app.bShowErrors		=	aspl.getRequest("bShowErrors")
+				
+		if app.save then
+			
+			aspl.addFB(l("changeshavebeensaved"))	
+			
+			form.writejs "load('admin_apps','admin_apps','');"
+			
+		end if
+		
+	end if
+	
+end if
+
+dim iId : set iId=form.field("hidden")
+iId.add "value",app.iId
+iId.add "name","iId"
+
+dim sName : set sName=form.field("text")
+sName.add "required",true
+sName.add "class","form-control"
+sName.add "label",l("name")
+sName.add "name","sName"
+sName.add "value",app.sName
+sName.add "maxlength",50
+
+form.newline
+
+dim sDescription : set sDescription=form.field("textarea")
+sDescription.add "class","form-control"
+sDescription.add "label",l("description")
+sDescription.add "name","sDescription"
+sDescription.add "value",app.sDescription
+
+form.newline
+
+dim sPath : set sPath=form.field("text")
+sPath.add "required",true
+sPath.add "class","form-control"
+sPath.add "label",l("path")
+sPath.add "name","sPath"
+sPath.add "value",app.sPath
+sPath.add "maxlength",50
+
+form.newline
+
+dim sDefault : set sDefault=form.field("text")
+sDefault.add "required",true
+sDefault.add "class","form-control"
+sDefault.add "label",l("defaultscript")
+sDefault.add "name","sDefault"
+sDefault.add "value",app.sDefault
+sDefault.add "maxlength",50
+
+form.newline
+
+dim sPublicPath : set sPublicPath=form.field("text")
+sPublicPath.add "class","form-control"
+sPublicPath.add "label","Public script"
+sPublicPath.add "name","sPublicPath"
+sPublicPath.add "value",app.sPublicPath
+sPublicPath.add "maxlength",50
+
+form.newline
+
+dim bActive
+
+set options=aspl.dict
+options.add "false",l("no")
+options.add "true",l("yes")
+
+set bActive = form.field("select")
+bActive.add "value",app.bActive
+bActive.add "name","bActive"
+bActive.add "id","bActive"
+bActive.add "options",options
+bActive.add "label",l("active")
+
+form.newline : form.newline
+
+set bPublic = form.field("select")
+bPublic.add "value",app.bPublic
+bPublic.add "name","bPublic"
+bPublic.add "id","bPublic"
+bPublic.add "options",options
+bPublic.add "label",l("availableforallusers")
+
+form.newline : form.newline
+
+set bShowErrors = form.field("select")
+bShowErrors.add "value",app.bShowErrors
+bShowErrors.add "name","bShowErrors"
+bShowErrors.add "id","bShowErrors"
+bShowErrors.add "options",options
+bShowErrors.add "label",l("showerrors")
+
+form.newline : form.newline
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("save")
+submit.add "class","btn btn-primary"
+
+if app.canBeDeleted then
+	dim delete : set delete=form.field("button")
+	delete.add "html",l("Delete")
+	delete.add "class","btn btn-secondary"	
+	delete.add "onclick","load('admin_appdelete','modalform','&iId=" & app.iId & "');"
+end if
+
+form.build
+
+%>

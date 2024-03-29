@@ -1,0 +1,33 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim modify : set modify=form.field("button")
+modify.add "html",l("modify")
+modify.add "class","btn btn-primary"
+modify.add "onclick","load('admin_systemedit','admin_system','');"
+
+dim sv
+sv="<table id=""system"" class=""table table-striped""><thead>"
+sv=sv & "<tr>"
+sv=sv & "<th>"&l("variable")&"</th>"
+sv=sv & "<th>"&l("value")&"</th>"
+sv=sv & "</tr></thead><tbody>"
+
+sv=sv & "<tr><td>" & l("name") & "</td><td>" & system.sName & "</td></tr>"
+sv=sv & "<tr><td>Logo</td><td>" & system.sLogo & "</td></tr>"
+sv=sv & "<tr><td>" & l("allownewregistrations") & "</td><td>" & yesNo(system.bAllownewregistrations) & "</td></tr>"
+sv=sv & "<tr><td>" & l("allowusersdelete") & "</td><td>" & yesNo(system.bAllowusersdelete) & "</td></tr>"
+sv=sv & "<tr><td>Send all outgoing mails to</td><td>" & system.sSystemEmail & "</td></tr>"
+sv=sv & "<tr><td>Terms</td><td>" & aspl.removeTabs(left(RemoveHTML(system.sterms),250)) & "</td></tr>"
+sv=sv & "<tr><td>Social sharing metatags</td><td>" & br(aspl.htmlEncode(system.sSocialSharing)) & "</td></tr>"
+sv=sv & "<tr><td>ChromeASP engine</td><td>" & aspl.htmlEncode(system.sChromeASP) & "</td></tr>"
+sv=sv & "</tbody>"
+sv=sv & "</table>"
+
+form.write sv
+
+form.build()
+
+%>

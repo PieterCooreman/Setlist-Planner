@@ -1,0 +1,54 @@
+<%
+dim form : set form=aspl.form
+
+dim userObj : set userObj=new cls_user
+userObj.pick(user.iId) : userObj.mustexist
+
+'security: can user delete himself?
+if not system.bAllowusersdelete then aspl.die
+
+'security! admins kunnen zichzelf niet verwijderen
+if userObj.iId=user.iId and userObj.bAdmin then 
+	aspl.addInfo(l("asanadministratoryoucannotdeleteyourself"))
+	form.build
+end if
+
+form.writejs modalLabel(l("deletemyaccountbutton"))
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then
+	
+		if userObj.remove then
+			
+			sec.signout
+			
+			form.writejs "location.assign('" & getSiteUrl & "');"
+			
+			form.build
+			
+		end if
+		
+	end if
+	
+end if
+
+dim iId : set iId=form.field("hidden")
+iId.add "value",userObj.iId
+iId.add "name","iId"
+
+aspl.addWarning(l("deletemyaccount"))
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("delete")
+submit.add "class","btn btn-warning"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class","btn btn-secondary"
+cancel.add "onclick","load('myaccount','modalform','');"
+
+form.build
+
+%>

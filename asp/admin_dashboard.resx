@@ -1,0 +1,23 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim txt : txt=aspl.loadText("html/admin_dashboard.txt")
+
+'hier enkele replaces
+txt=replace(txt,"[users]",l("users"),1,-1,1)
+txt=replace(txt,"[mail]",l("mail"),1,-1,1)
+txt=replace(txt,"[tools]",l("tools"),1,-1,1)
+txt=replace(txt,"[translations]",l("translations"),1,-1,1)
+txt=replace(txt,"[variables]",l("variables"),1,-1,1)
+txt=replace(txt,"[languages]",l("languages"),1,-1,1)
+txt=replace(txt,"[apps]",l("apps"),1,-1,1)
+txt=replace(txt,"[systemsettings]",l("systemsettings"),1,-1,1)
+
+form.write txt
+
+form.writejs "load('admin_usertable','admin_usertable','');"
+
+form.build
+%>

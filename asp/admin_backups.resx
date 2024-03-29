@@ -1,0 +1,40 @@
+<%
+
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+form.writejs modalLabel(l("availablebackups") & " (" & l("recentfirst") & ")")
+
+dim file,folder : set folder=aspl.fso.getFolder(server.mappath("db/backup"))
+
+dim table : table="<table style=""width:99%"" id=""backupfiles"" class=""table table-striped"">"
+table=table & "<thead>"
+table=table & "<tr>"
+table=table & "<th>Created</th><th>File</th><th>Size</th>"
+table=table & "</tr>"
+table=table & "</thead>"
+table=table & "<tbody>"
+
+for each file in folder.files
+	
+	if aspl.getFileType(file.name)="resx" then 
+
+		table=table & "<tr>"
+		table=table & "<td>" & file.datecreated & "</td>"
+		table=table & "<td><a href=""#"" onclick=""load('admin_backupdetail','modalform','&filepath=" & server.urlencode(file.name) & "');"">"
+		table=table & replace(file.name,".resx","",1,-1,1) & "</a></td>"
+		table=table & "<td>" & round(file.size/1024/1024,2) & "MB</td>"
+		table=table & "</tr>"
+	
+	end if
+	
+next
+
+table=table & "</tbody></table>" & datatableFirstColumn("backupfiles")
+
+form.write table
+
+form.build
+
+%>

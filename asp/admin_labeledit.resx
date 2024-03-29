@@ -1,0 +1,151 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim label : set label=new cls_label
+label.pick(aspl.getRequest("iId"))
+
+if not aspl.isEmpty(aspl.getRequest("sCode")) then
+	label.sCode=trim(lcase(aspl.getRequest("sCode")))
+	label.sCode=replace(label.sCode,".","",1,-1,1)
+	label.sCode=replace(label.sCode," ","",1,-1,1)
+	label.sCode=replace(label.sCode,"/","",1,-1,1)
+	label.sCode=replace(label.sCode,"\","",1,-1,1)
+	label.sCode=replace(label.sCode,"-","",1,-1,1)
+	label.sCode=replace(label.sCode,",","",1,-1,1)
+	label.sCode=replace(label.sCode,":","",1,-1,1)
+	label.sCode=replace(label.sCode,"?","",1,-1,1)	
+	label.sCode=replace(label.sCode,"!","",1,-1,1)
+	label.sCode=replace(label.sCode,"'","",1,-1,1)
+	label.sCode=replace(label.sCode,"""","",1,-1,1)	
+end if
+
+if label.iId<>0 then
+	form.writejs modalLabel(l("editlabel"))
+else
+	form.writejs modalLabel(l("addlabel"))	
+end if
+
+dim sValue, newLabel, language, languagelist : set languagelist=new cls_languageList
+
+set languagelist=languagelist.list
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then		
+	
+		'check of alle velden zijn ingevuld
+		
+		dim check : check=true
+		
+		if aspl.isEmpty(aspl.getRequest("sCode")) then
+			check=false
+			aspl.addErr(l("codeismandatory"))				
+		end if
+		
+		if label.iId=0 then
+			'check if code exists
+			dim rs : set rs=dbL.execute("select iId from tblLabel where sCode='" & aspl.sqli(label.sCode) & "'")
+			if not rs.eof then 
+				check=false
+				aspl.addErr(l("thiscodeexistsalready"))
+			end if
+		end if
+				
+		for each language in languagelist	
+			if aspl.isEmpty(aspl.getRequest("sValue" & language) ) then
+				check=false
+				aspl.addErr(l("alltranslationsaremandatory"))
+				exit for
+			end if
+		next
+		
+		if check then
+		
+			for each language in languagelist	
+			
+				set newLabel			= llobj(label.sCode,language)
+				newLabel.iLanguageID	= language
+				newLabel.sCode			= label.sCode
+				newLabel.sValue			= aspl.getRequest("sValue" & language) 
+				newLabel.save			
+			
+			next
+			
+			aspl.addFb("<strong>" & label.sCode & "</strong> " & l("hasbeenupdated") )
+			
+			form.writejs "load('admin_translations','admin_translations','');"
+			
+			form.build
+			
+		end if
+		
+	end if
+	
+end if
+
+set labelID=form.field("hidden")		
+labelID.add "name","iId"
+labelID.add "value",label.iId
+
+dim sCode
+
+if label.iId=0 then
+
+	set sCode=form.field("text")
+	sCode.add "required",true
+	sCode.add "class","form-control"
+	sCode.add "label","Code"
+	sCode.add "name","sCode"
+	sCode.add "id","sCode"
+	sCode.add "value",label.sCode
+	sCode.add "maxlength",50	
+	
+	form.newline : form.newline
+
+else
+
+	set sCode=form.field("hidden")	
+	sCode.add "name","sCode"
+	sCode.add "value",label.sCode	
+	
+	aspl.addInfo(l("labelsforcode") & " <strong>" & label.sCode & "</strong>")
+
+end if
+
+
+for each language in languagelist
+
+	set sValue=form.field("textarea")
+	sValue.add "required",true
+	sValue.add "class","form-control"
+	sValue.add "label",languagelist(language).sName
+	sValue.add "name","sValue" & language
+	sValue.add "value",ll(label.sCode,language)
+	set sValue=nothing
+	
+	form.newline : form.newline
+	
+next
+
+set languagelist=nothing
+
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("Save")
+submit.add "class","btn btn-primary"
+
+if label.canBeDeleted then
+	
+	dim delete : set delete=form.field("button")
+	delete.add "html",l("Delete")
+	delete.add "class","btn btn-secondary"
+	delete.add "onclick","load('admin_labeldelete','modalform','&iId=" & server.urlencode(label.iId) & "');"
+
+end if
+
+form.build
+
+%>

@@ -1,0 +1,13 @@
+<%
+
+dim userObj : set userObj=new cls_user
+
+if userObj.userToBeConfirmed(aspl.getRequest("sToken"),aspl.getRequest("iId")) then
+	session("userToBeConfirmed")=aspl.convertNmbr(aspl.getRequest("iId"))	
+else
+	session("userToBeConfirmed")=0
+end if
+
+response.redirect (getSiteUrl)
+
+%>

@@ -1,0 +1,83 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim adminType : set adminType=form.field("hidden")
+adminType.add "name","adminType"
+adminType.add "id","adminType"
+adminType.add "value",""
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then	
+	
+		select case lcase(aspl.getRequest("adminType"))
+		
+			case "compress"
+	
+				if compressDB then
+				
+					aspl.addFB("The database was succesfully compressed.")
+				
+				else
+				
+					aspl.addErr("Something went wrong. Make sure the database is not exclusively opened by another user.")
+				
+				end if
+			
+			case "backup"
+			
+				if backupDB then
+				
+					aspl.addFB("Database was successfully backed up !")
+				
+				else
+				
+					aspl.addErr("Something went wrong. Make sure IUSR has read/write permissions for the backup folder.")
+					
+				end if
+			
+			case "recycle"
+			
+				if aspl.recycleApplication then
+				
+					aspl.addFB("The application pool has successfully been recycled.")
+				
+				else
+				
+					aspl.addErr("Something went wrong. Make sure the IUSR has read/write permissions on <strong>global.asa</strong> in the root of your site.")
+				
+				end if				
+		
+		end select		
+	
+	end if
+
+end if
+
+
+dim back : set back=form.field("submit")
+back.add "html",l("compressdatabase")
+back.add "class","btn btn-warning"
+back.add "onclick","$('#adminType').val('compress');" & spinner
+
+dim backup : set backup=form.field("submit")
+backup.add "html","Backup database"
+backup.add "class","btn btn-danger"
+backup.add "onclick","$('#adminType').val('backup');"
+
+dim recycle : set recycle=form.field("submit")
+recycle.add "html","Recycle application"
+recycle.add "class","btn btn-info"
+recycle.add "onclick","$('#adminType').val('recycle');"
+
+dim backups : set backups=form.field("button")
+backups.add "html",l("availablebackups")
+backups.add "class","btn btn-success"
+backups.add "onclick","modalAspForm ('admin_backups','','');"
+
+form.build()
+
+%>

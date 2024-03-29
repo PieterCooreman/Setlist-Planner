@@ -1,0 +1,109 @@
+<%
+dim form : set form=aspl.form
+
+dim userObj : set userObj=new cls_user
+userObj.pick(user.iId) : userObj.mustexist
+
+dim copyLID : copyLID=userObj.iLanguageID
+
+form.writejs modalLabel(l("myaccount"))
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then	
+		
+		userObj.sFirstname	=	aspl.getRequest("sFirstname")
+		userObj.sLastname	=	aspl.getRequest("sLastname")
+		userObj.sEmail		=	aspl.getRequest("sEmail")
+		userObj.iLanguageID	=	aspl.getRequest("iLanguageID")
+		
+		if userObj.save then				
+			
+			if aspl.convertNmbr(copyLID)<>aspl.convertNmbr(userObj.iLanguageID) then
+			
+				overruleLID=userObj.iLanguageID
+			
+				aspl.addWarning(l("reloadafterlanguageswitch"))	
+				
+				dim reload : set reload=form.field("button")
+				reload.add "html",l("reload")
+				reload.add "class","btn btn-warning"
+				reload.add "onclick","location.assign('" & getSiteUrl & "');"
+				
+				form.build
+				
+			end if		
+
+			aspl.addFB(l("changeshavebeensaved"))			
+			
+			form.writejs "$('#usertable').DataTable().ajax.reload();"
+			
+		end if
+		
+	end if
+	
+end if
+
+dim firstname : set firstname=form.field("text")
+firstname.add "required",true
+firstname.add "class","form-control"
+firstname.add "label",l("firstname")
+firstname.add "name","sFirstname"
+firstname.add "value",userObj.sFirstname
+firstname.add "maxlength",100
+
+form.newline
+
+dim lastname : set lastname=form.field("text")
+lastname.add "required",true
+lastname.add "class","form-control"
+lastname.add "label",l("lastname")
+lastname.add "name","sLastname"
+lastname.add "value",userObj.sLastname
+lastname.add "maxlength",100
+
+form.newline
+
+dim email : set email=form.field("email")
+email.add "required",true
+email.add "class","form-control"
+email.add "label",l("email")
+email.add "name","sEmail"
+email.add "value",userObj.sEmail
+email.add "maxlength",100
+
+form.newline
+
+dim languagelist : set languagelist=new cls_languagelist
+
+set iLanguageID = form.field("select")
+iLanguageID.add "value",userObj.iLanguageID
+iLanguageID.add "name","iLanguageID"
+iLanguageID.add "id","iLanguageID"
+iLanguageID.add "options",languagelist.dict
+iLanguageID.add "label",l("Language")
+
+form.newline
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("Save")
+submit.add "class","btn btn-primary"
+
+dim resetpw : set resetpw=form.field("button")
+resetpw.add "html",l("resetpw")
+resetpw.add "class","btn btn-secondary"
+resetpw.add "onclick","load('myaccount_resetpw','modalform','');"
+
+if system.bAllowusersdelete then
+
+	dim remove : set remove=form.field("button")
+	remove.add "html",l("deletemyaccountbutton")
+	remove.add "class","btn btn-warning"
+	remove.add "onclick","load('myaccount_delete','modalform','');"
+
+end if
+
+form.build
+
+%>

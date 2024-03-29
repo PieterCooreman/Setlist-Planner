@@ -1,0 +1,178 @@
+<%
+dim myApp, appKey, myApps : set myApps=aspl.dict
+
+dim customAppID : customAppID=aspl.convertNmbr(aspl.getRequest("customAppID"))
+dim custumAppPath : custumAppPath=aspl.getRequest("custumAppPath")	
+
+function directlink(value,qs)	
+	directlink=getSiteUrl & "/?asplEvent=dashboard&customAppID=" & myApp.iId & "&custumAppPath=" & server.urlEncode(value) & qs
+end function
+
+function load(value,qs)
+	load="load('dashboard','dashboard','" & qs & "&customAppID=" & myApp.iId & "&custumAppPath=" & server.urlEncode(value) & "');return false;"
+end function
+
+function loadInTarget(target,value,qs)
+	loadInTarget="load('dashboard','" & target & "','" & qs & "&customAppID=" & myApp.iId & "&custumAppPath=" & server.urlEncode(value) & "');"
+end function
+
+function loadmodal(value,qs)
+	loadmodal="modalAspForm ('dashboard',"
+	loadmodal=loadmodal & "'&customAppID=" & myApp.iId & "&custumAppPath=" & server.urlEncode(value) & "','" & qs & "');"
+	loadmodal=loadmodal & "return false;"
+end function
+
+function loadmodalonload(value,qs)
+	loadmodalonload="modalAspForm ('dashboard',"
+	loadmodalonload=loadmodalonload & "'&customAppID=" & myApp.iId & "&custumAppPath=" & server.urlEncode(value) & "','" & qs & "');"	
+end function
+
+function loadmodaliId(value,iId,qs)
+	loadmodaliId="modalAspForm ('dashboard','"
+	loadmodaliId=loadmodaliId & iId & "&customAppID=" & myApp.iId & "&custumAppPath=" & server.urlEncode(value) & "','" & qs & "');"
+	loadmodaliId=loadmodaliId & "return false;"
+end function
+
+function loadmodalXLiId(value,iId,qs)
+	loadmodalXLiId="modalAspFormXL ('dashboard','"
+	loadmodalXLiId=loadmodalXLiId & iId & "&customAppID=" & myApp.iId & "&custumAppPath=" & server.urlEncode(value) & "','" & qs & "');"
+	loadmodalXLiId=loadmodalXLiId & "return false;"
+end function
+
+if customAppID<>0 then
+
+	set myApp = new cls_app
+	myApp.pick(customAppID)
+	myApps.add myApp.iId,myApp
+	set myApp=nothing	
+	
+else
+
+	dim rs : set rs=db.execute("select iId from tblApp where bActive=true and bDeleted=false order by sName")
+
+	while not rs.eof
+
+		set myApp=new cls_app
+		myApp.pick(rs(0))
+		myApps.add myApp.iId,myApp
+		set myApp=nothing
+		
+		rs.movenext
+		
+	wend
+	
+end if
+
+if myApps.count=1 then
+
+	for each appKey in myApps
+	
+		set myApp=myApps(appKey)
+
+		if user.iId<>0 or (myApp.sPublicPath=custumAppPath and not aspl.isEmpty(myApp.sPublicPath)) then
+		
+			on error resume next
+				
+			'each script start with creating an aspl.form
+			dim form : set form=aspl.form
+			dim appID : set appID=form.field("hidden")
+			appID.add "name","customAppID"			
+			appID.add "value",myApp.iId
+						
+			dim custumAppPathHF : set custumAppPathHF=form.field("hidden")
+			custumAppPathHF.add "name","custumAppPath"			
+			custumAppPathHF.add "value",custumAppPath		
+			
+			'execute the body
+			if aspl.isEmpty(custumAppPath) then
+				aspL.execWithErrors(myApp.sPath & "/" & myApp.sDefault)				
+			else				
+				aspL.execWithErrors(myApp.sPath & "/" & custumAppPath)				
+			end if
+			
+			if err.number<>0 then
+			
+				if myApp.bShowerrors then 
+			
+					dim asperror : asperror="<div class=""alert alert-warning"">"
+					asperror=asperror & "<p class=""lead"">aspLite error details:</p><ul>"				
+					asperror=asperror & "<li>querystring: <strong>" & Request.ServerVariables("QUERY_STRING") & "</strong></li>"  
+					asperror=asperror & "<li>form: <strong>" & Request.form & "</strong></li>"  				 
+					asperror=asperror & "<li>err.number: <strong>" & err.number & "</strong></li>"  
+					asperror=asperror & "<li>err.source: <strong>" & err.source & "</strong></li>"  
+					asperror=asperror & "<li>err.description: <strong>" & err.description & "</strong></li>"  
+					asperror=asperror & "</ul></div>"				
+					
+					form.write asperror	
+					
+					dim retryButton
+					if aspl.isEmpty(Request.form) then
+						set retryButton=form.field("button")
+						retryButton.add "onclick","loadQS('" & Request.ServerVariables("QUERY_STRING") & "');return false;"
+					else
+						set retryButton=form.field("submit")
+					end if
+					
+					retryButton.add "html",l("retry")
+					retryButton.add "class","btn btn-warning"
+				
+				else
+				
+					form.write l("somethingwentwrong")
+					
+				end if
+				
+			end if
+			
+			on error goto 0
+			
+			'finally, build the form. execution of the script ends here
+			'form.writejs "document.getElementById('bt-search').innerHTML='" & aspl.printTimer & "';"
+			form.build
+			
+		end if
+		
+	next
+		
+else
+
+	dim formAppColl : set formAppColl=aspl.form
+	
+	dim html : html = "<div class=""row"">"
+
+	for each appKey in myApps
+	
+		if myApps(appKey).bHasAccess then
+		
+			html=html & "<div class=""col-sm-4 mb-3 mb-sm-4"">"
+			html=html & "<div class=""card"">"
+			html=html & "<div class=""card-body"">"
+			html=html & "<h4>" & aspl.htmlEncode(myApps(appKey).sName) & "</h4>"
+			html=html & "<p class=""lead"">" & aspl.htmlEncode(myApps(appKey).sDescription)  & "</p>"
+			html=html & "<a href=""#"" onclick=""load('dashboard','dashboard','&customAppID=" & appKey & "');return false;"" "
+			
+			if myApps(appKey).bPublic then
+				html=html & "class=""btn btn-primary"">"
+				html=html & geticon("rocket_launch") &  l("launch") 
+			else
+				html=html & "class=""btn btn-warning"">"
+				html=html & geticon("rocket_launch") &  l("launch") & " (" & l("adminonly") & ")"
+			end if
+			
+			html=html & "</a></div></div></div>"
+		
+		end if
+		
+	next
+	
+	html=html & "</div>"
+	
+	formAppColl.write html
+		
+	formAppColl.build
+
+end if
+
+set myApps=nothing
+
+%>

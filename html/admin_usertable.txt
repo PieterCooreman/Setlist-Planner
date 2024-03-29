@@ -1,0 +1,53 @@
+<table class="table table-striped" id="usertable">
+	<thead>
+		<th>[lastname]</th>
+		<th>[firstname]</th>
+		<th>[email]</th>
+		<th>[lastlogin]</th>		
+		<th>[updated]</th>
+		<th>[role]</th>
+	</thead>
+</table>
+
+<script>
+
+$(document).ready( function () {	
+	
+	$('#usertable').DataTable( {	
+		lengthChange: true,
+		paging: true,
+		"lengthMenu": [ 10, 25, 50, 75, 100, 500 ],
+		"dom": 'Blfrtip',	
+		  buttons: ['copy', 'excel', 'csv', 'pdf', 'print', 'colvis',
+            {
+                text: '[ADD]',
+                action: function ( e, dt, node, config ) {
+                    modalAspForm('admin_useredit','','');return false;
+                }
+            }
+        ],
+		"order": [[ 0, 'asc' ]],
+		"responsive": true,
+		"serverSide": true,		
+		"orderMulti": false,
+		"ajax": { 
+			url: aspLiteAjaxHandler + '?asplEvent=admin_usertable_data', 
+			type:'POST'
+			},
+		"processing": true,
+		"columnDefs": [
+				{"targets": '_all',"render":$.fn.dataTable.render.text()}				
+			],			
+		"columns": [           		
+				{ "data": "sLastname", render: function ( data, type, row ) {return '<a class="link" href="#" onclick="modalAspForm(\'admin_useredit\',' + row.iId + ',\'\');return false;">' + htmlEnc(row.sLastname) + '</a>';}},
+				{ "data": "sFirstname"},	
+				{ "data": "sEmail"},
+				{ "data": "dLoginTS"},				
+				{ "data": "dUpdatedTS"},
+				{ "data": "bAdmin", render: function ( data, type, row ) {if (row.bAdmin) {return 'Admin'} else {return 'User'}}}					
+			]
+	} );
+		
+});
+
+</script>

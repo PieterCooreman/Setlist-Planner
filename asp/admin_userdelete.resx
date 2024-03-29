@@ -1,0 +1,49 @@
+<%
+user.checkifadmin
+
+dim form : set form=aspl.form
+
+dim userObj : set userObj=new cls_user
+userObj.pick(aspl.getRequest("iId"))
+
+form.writejs modalLabel(l("deleteuser"))
+
+if form.postback then
+
+	'session securitycheck
+	if form.sameSession then
+	
+		if userObj.remove then
+			
+			aspl.addFB(l("userhasbeendeleted"))
+			
+			form.writejs "$('#usertable').DataTable().ajax.reload();"
+			
+			form.writejs "setTimeout(function(){$('#crmModal').modal('hide')},2000);"	
+			
+			form.build
+			
+		end if
+		
+	end if
+	
+end if
+
+dim iId : set iId=form.field("hidden")
+iId.add "value",userObj.iId
+iId.add "name","iId"
+
+aspl.addWarning(l("deletecmd") & " <b>" & server.htmlencode(userObj.sFullname) & "</b>?")
+
+dim submit : set submit=form.field("submit")
+submit.add "html",l("Delete")
+submit.add "class","btn btn-warning"
+
+dim cancel : set cancel=form.field("button")
+cancel.add "html",l("cancel")
+cancel.add "class","btn btn-secondary"
+cancel.add "onclick","load('admin_useredit','modalform','&iId=" & userObj.iId & "');"
+
+form.build
+
+%>
