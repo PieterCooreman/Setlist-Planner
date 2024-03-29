@@ -1,0 +1,25 @@
+<%
+aspl(myApp.sPath & "/includes/begin.asp")
+
+'security omzeilen
+user.iId=dba.execute("select iUserID from tblPlaylist where iId=" & aspl.convertNmbr(form.request("iId")))(0)
+
+dim playlist : set playlist=new cls_playlist : playlist.pick (form.request("iId"))
+'security
+if aspl.convertNmbr(playlist.iId)=0 or playlist.sToken<>form.request("sToken") then aspl.die
+
+dim appstring : appstring=playlist.iId & "-" & playlist.sToken & "-" & form.request("iLid") & "-" & form.request("noheader")
+
+application(appstring)=playlist.html(true)
+
+dim finalresult : finalresult=application(appstring)
+
+if request.querystring("noheader")<>"" then	
+	finalresult=replace(finalresult,"XXXXXXX","display:none",1,-1,1)
+else
+	finalresult=replace(finalresult,"XXXXXXX","",1,-1,1)
+end if
+
+aspl.dump cssMode(playlist.getToken,finalresult,form.request("mode"))
+
+%>

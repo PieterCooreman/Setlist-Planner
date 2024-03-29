@@ -1,0 +1,42 @@
+<table class="table table-striped" id="exportTable">
+	<thead>
+		<tr>
+			<th>N°</th>	
+			<th>[TITLE]</th>
+			<th>[ARTIST]</th>				
+			<th>[REMARKS]</th>
+			<th>[TUNING]</th>	
+			<th>BMP</th>
+		</tr>		
+	</thead>
+	
+	<tbody>		
+		
+		[RECORDS]
+	
+	</tbody>
+	
+</table>
+
+<script>
+
+$(document).ready( function () {	
+
+	document.title='[PLAYLIST]';
+
+	$('#exportTable').DataTable( {	
+		lengthChange: false,
+		[LANGUAGE]
+		paging: false,
+		searching: false,
+		"lengthMenu": [ 1000 ],
+		"dom": 'Blfrtip',	
+		 buttons: ['copy', 'excel', 'csv', 'pdf', 'print'],
+		"order": [[ 0, 'asc' ]],
+		"responsive": false,
+		"serverSide": false
+	} );
+		
+});
+
+</script>

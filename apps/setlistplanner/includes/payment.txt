@@ -1,0 +1,22 @@
+<div id="paypal-button-container-P-53V74186RW087810NMXXSZOA"></div>
+
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'rect',
+          color: 'gold',
+          layout: 'vertical',
+          label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          /* Creates the subscription */
+          plan_id: 'P-53V74186RW087810NMXXSZOA'
+        });
+      },
+      onApprove: function(data, actions) {
+        //alert(data.subscriptionID); // You can add optional success message for the subscriber here
+		[SUCCESS]
+      }
+  }).render('#paypal-button-container-P-53V74186RW087810NMXXSZOA'); // Renders the PayPal button
+</script>

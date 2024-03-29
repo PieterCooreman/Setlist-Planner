@@ -1,0 +1,4 @@
+<!-- social sharing -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image:src" content="[siteurl]html/setlistplanner.jpg">
+<meta property="og:image" content="[siteurl]html/setlistplanner.jpg">
