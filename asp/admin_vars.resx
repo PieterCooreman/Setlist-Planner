@@ -4,10 +4,10 @@ user.checkifadmin
 dim form : set form=aspl.form
 
 dim s,sf : sf="<table id=""vars"" class=""table table-striped"">"
-sf=sf & "<thead>"
+sf=sf & "<thead><tr>"
 sf=sf & "<th>"&l("variable")&"</th>"
 sf=sf & "<th>"&l("value")&"</th>"
-sf=sf & "</thead><tbody>" 
+sf=sf & "</tr></thead><tbody>" 
 
 for each s in request.servervariables
 	sf=sf & "<tr><td>" & s & "</td><td> " & request.servervariables(s) & "</td></tr>"
