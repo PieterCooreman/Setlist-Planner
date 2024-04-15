@@ -1,11 +1,13 @@
 <table class="table table-striped" id="usertable">
 	<thead>
+		<tr>
 		<th>[lastname]</th>
 		<th>[firstname]</th>
 		<th>[email]</th>
 		<th>[lastlogin]</th>		
 		<th>[updated]</th>
 		<th>[role]</th>
+		</tr>
 	</thead>
 </table>
 
